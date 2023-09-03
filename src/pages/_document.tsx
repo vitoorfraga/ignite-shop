@@ -1,3 +1,4 @@
+import { getCssText } from '@/styles'
 import { Html, Head, Main, NextScript } from 'next/document'
 
 export default function Document() {
@@ -14,6 +15,12 @@ export default function Document() {
           href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap"
           rel="stylesheet"
         />
+
+        {/* => Configuração SSR Stitches */}
+        <style
+          id="stitches"
+          dangerouslySetInnerHTML={{ __html: getCssText() }}
+        />
       </Head>
       <body>
         {/* => Equivalente ao Root de uma aplicação React */}
@@ -26,5 +33,5 @@ export default function Document() {
   )
 }
 
-// IMPORTANTE
+// => IMPORTANTE
 // TODA VEZ QUE ESSE ARQUIVO FOR ALTERADO É NECESSÁRIO REINICIAR O SERVIDOR NODE.
