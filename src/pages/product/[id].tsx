@@ -4,7 +4,7 @@ import {
   ProductContainer,
   ProductDetails,
 } from '@/styles/pages/product'
-import { GetStaticProps } from 'next'
+import { GetServerSideProps, GetStaticPaths, GetStaticProps } from 'next'
 import React from 'react'
 import Stripe from 'stripe'
 
@@ -13,26 +13,31 @@ interface ProductProps {
     id: string
     name: string
     imageUrl: string
-    price: number
+    price: string
     description: string
-  }[]
+  }
 }
 
+export const getStaticPaths: GetStaticPaths = async () => {
+  return {
+    paths: [
+      {params: {id:}}
+    ],
+    fallback: false
+  }
+} 
+
 export default function Produto({ product }: ProductProps) {
+  console.log(product)
   return (
     <ProductContainer>
       <ImageContainer />
 
       <ProductDetails>
-        <h1>Camiseta x</h1>
-        <span>R$ 79,90</span>
+        <h1>{product.name}</h1>
+        <span>{product.price}</span>
 
-        <p>
-          Lorem ipsum dolor sit, amet consectetur adipisicing elit. Laborum
-          consequatur quas minus, quaerat ad delectus facere, itaque ratione
-          ipsum aliquam animi tenetur deleniti blanditiis quam? Dolor architecto
-          numquam deleniti similique.
-        </p>
+        <p>{product.description}</p>
 
         <button>Comprar agora</button>
       </ProductDetails>
@@ -40,28 +45,35 @@ export default function Produto({ product }: ProductProps) {
   )
 }
 
-export const getStaticProps: GetStaticProps<any, { id: string }> = async ({
-  params,
-}) => {
+export const getServerSideProps: GetServerSideProps<
+  any,
+  { id: string }
+> = async ({ params }) => {
   console.log(params)
+  const productId = params.id
 
   const product = await stripe.products.retrieve(productId, {
     expand: ['default_price'],
   })
 
+  console.log(product)
+
   const price = product.default_price as Stripe.Price
 
   return {
     props: {
-      id: product.id,
-      name: product.name,
-      imageUrl: product.images[0],
-      price: new Intl.NumberFormat('pt-BR', {
-        style: 'currency',
-        currency: 'BRL',
-      }).format(price.unit_amount / 100),
-      description: product.description,
+      // product,
+      product: {
+        id: product.id,
+        name: product.name,
+        imageUrl: product.images[0],
+        price: new Intl.NumberFormat('pt-BR', {
+          style: 'currency',
+          currency: 'BRL',
+        }).format(price.unit_amount / 100),
+        description: product.description,
+      },
     },
-    revalidate: 60 * 60 * 1, // 1 Hora
+    // revalidate: 60 * 60 * 1, // 1 Hora
   }
 }
