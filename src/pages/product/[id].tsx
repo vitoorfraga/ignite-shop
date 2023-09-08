@@ -39,3 +39,29 @@ export default function Produto({ product }: ProductProps) {
     </ProductContainer>
   )
 }
+
+export const getStaticProps: GetStaticProps<any, { id: string }> = async ({
+  params,
+}) => {
+  console.log(params)
+
+  const product = await stripe.products.retrieve(productId, {
+    expand: ['default_price'],
+  })
+
+  const price = product.default_price as Stripe.Price
+
+  return {
+    props: {
+      id: product.id,
+      name: product.name,
+      imageUrl: product.images[0],
+      price: new Intl.NumberFormat('pt-BR', {
+        style: 'currency',
+        currency: 'BRL',
+      }).format(price.unit_amount / 100),
+      description: product.description,
+    },
+    revalidate: 60 * 60 * 1, // 1 Hora
+  }
+}
