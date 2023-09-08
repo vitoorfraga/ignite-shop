@@ -2,10 +2,9 @@ import { styled } from '..'
 
 export const HomeContainer = styled('main', {
   display: 'flex',
-  gap: '3rem',
-
   maxWidth: 'calc(100vw - ((100vw - 1180px) / 2))',
   width: '100%',
+  minWidth: '580px',
   marginLeft: 'auto',
 
   minHeight: '656px',
@@ -15,7 +14,6 @@ export const Product = styled('a', {
   background: 'linear-gradient(180deg, #1ea483 0%, #7465da 100%)',
 
   borderRadius: 8,
-  padding: '.25rem',
   cursor: 'pointer',
   position: 'relative',
   overflow: 'hidden',
